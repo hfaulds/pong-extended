@@ -1,0 +1,11 @@
+[package]
+name = "make-a-ship"
+version = "0.1.0"
+authors = ["Hayden Faulds <fauldsh@gmail.com>"]
+
+[dependencies]
+amethyst = { path = "../amethyst" }
+
+[[bin]]
+name = "make_a_ship"
+path = "main.rs"
