@@ -1,5 +1,5 @@
 [package]
-name = "make-a-ship"
+name = "pong-extended"
 version = "0.1.0"
 authors = ["Hayden Faulds <fauldsh@gmail.com>"]
 

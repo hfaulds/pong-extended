@@ -1,11 +1,7 @@
 use {Ball, ScoreBoard};
-use amethyst::assets::AssetStorage;
-use amethyst::audio::Source;
-use amethyst::audio::output::Output;
 use amethyst::core::transform::Transform;
-use amethyst::ecs::prelude::{Entity, Join, Read, ReadExpect, System, Write, WriteStorage};
-use amethyst::ui::UiText;
-use audio::Sounds;
+use amethyst::ecs::prelude::{Entity, Join, ReadExpect, System, Write, WriteStorage};
+use amethyst::ui::{UiText};
 
 /// This system is responsible for checking if a ball has moved into a left or
 /// a right edge. Points are distributed to the player on the other side, and
@@ -18,10 +14,7 @@ impl<'s> System<'s> for WinnerSystem {
         WriteStorage<'s, Transform>,
         WriteStorage<'s, UiText>,
         Write<'s, ScoreBoard>,
-        Read<'s, AssetStorage<Source>>,
-        ReadExpect<'s, Sounds>,
         ReadExpect<'s, ScoreText>,
-        Read<'s, Option<Output>>,
     );
 
     fn run(
@@ -31,10 +24,7 @@ impl<'s> System<'s> for WinnerSystem {
             mut transforms,
             mut text,
             mut score_board,
-            storage,
-            sounds,
             score_text,
-            audio_output,
         ): Self::SystemData,
     ) {
         for (ball, transform) in (&mut balls, &mut transforms).join() {
@@ -70,13 +60,6 @@ impl<'s> System<'s> for WinnerSystem {
                     "Score: | {:^3} | {:^3} |",
                     score_board.score_left, score_board.score_right
                 );
-
-                // Play audio.
-                if let Some(ref output) = *audio_output {
-                    if let Some(sound) = storage.get(&sounds.score_sfx) {
-                        output.play_once(sound, 1.0);
-                    }
-                }
             }
         }
     }

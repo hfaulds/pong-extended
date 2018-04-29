@@ -1,10 +1,6 @@
 use {Ball, Paddle, Side};
-use amethyst::assets::AssetStorage;
-use amethyst::audio::Source;
-use amethyst::audio::output::Output;
 use amethyst::core::transform::Transform;
-use amethyst::ecs::prelude::{Join, Read, ReadExpect, ReadStorage, System, WriteStorage};
-use audio::{play_bounce, Sounds};
+use amethyst::ecs::prelude::{Join, ReadStorage, System, WriteStorage};
 
 /// This system is responsible for detecting collisions between balls and
 /// paddles, as well as balls and the top and bottom edges of the arena.
@@ -15,14 +11,11 @@ impl<'s> System<'s> for BounceSystem {
         WriteStorage<'s, Ball>,
         ReadStorage<'s, Paddle>,
         ReadStorage<'s, Transform>,
-        Read<'s, AssetStorage<Source>>,
-        ReadExpect<'s, Sounds>,
-        Read<'s, Option<Output>>,
     );
 
     fn run(
         &mut self,
-        (mut balls, paddles, transforms, storage, sounds, audio_output): Self::SystemData,
+        (mut balls, paddles, transforms): Self::SystemData,
     ) {
         // Check whether a ball collided, and bounce off accordingly.
         //
@@ -37,10 +30,8 @@ impl<'s> System<'s> for BounceSystem {
             // Bounce at the top or the bottom of the arena.
             if ball_y <= ball.radius && ball.velocity[1] < 0.0 {
                 ball.velocity[1] = -ball.velocity[1];
-                play_bounce(&*sounds, &storage, &*audio_output);
             } else if ball_y >= ARENA_HEIGHT - ball.radius && ball.velocity[1] > 0.0 {
                 ball.velocity[1] = -ball.velocity[1];
-                play_bounce(&*sounds, &storage, &*audio_output);
             }
 
             // Bounce at the paddles.
@@ -63,10 +54,8 @@ impl<'s> System<'s> for BounceSystem {
                 ) {
                     if paddle.side == Side::Left && ball.velocity[0] < 0.0 {
                         ball.velocity[0] = -ball.velocity[0];
-                        play_bounce(&*sounds, &storage, &*audio_output);
                     } else if paddle.side == Side::Right && ball.velocity[0] > 0.0 {
                         ball.velocity[0] = -ball.velocity[0];
-                        play_bounce(&*sounds, &storage, &*audio_output);
                     }
                 }
             }

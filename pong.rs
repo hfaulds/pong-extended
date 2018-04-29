@@ -7,20 +7,18 @@ use amethyst::ecs::prelude::World;
 use amethyst::prelude::*;
 use amethyst::renderer::{Camera, Event, KeyboardInput, Material, MeshHandle, PosTex, Projection,
                          VirtualKeyCode, WindowEvent, WindowMessages};
-use amethyst::ui::{Anchor, Anchored, TtfFormat, UiText, UiTransform};
-use systems::ScoreText;
+use amethyst::ui::{Anchor, Anchored, TtfFormat, UiText, UiTransform, UiButtonBuilder,
+                    UiButtonResources};
+use systems::{CheatButton, ScoreText};
 
 pub struct Pong;
 
 impl State for Pong {
     fn on_start(&mut self, world: &mut World) {
-        use audio::initialise_audio;
-
         // Setup our game.
         initialise_paddles(world);
         initialise_balls(world);
         initialise_camera(world);
-        initialise_audio(world);
         initialise_score(world);
         hide_cursor(world);
     }
@@ -64,13 +62,13 @@ fn initialise_camera(world: &mut World) {
 fn hide_cursor(world: &mut World) {
     use amethyst::winit::CursorState;
 
-    world
-        .write_resource::<WindowMessages>()
-        .send_command(|win| {
-            if let Err(err) = win.set_cursor_state(CursorState::Hide) {
-                eprintln!("Unable to make cursor hidden! Error: {:?}", err);
-            }
-        });
+    //world
+        //.write_resource::<WindowMessages>()
+        //.send_command(|win| {
+            //if let Err(err) = win.set_cursor_state(CursorState::Hide) {
+                //eprintln!("Unable to make cursor hidden! Error: {:?}", err);
+            //}
+        //});
 }
 
 /// Initialises one paddle on the left, and one paddle on the right.
@@ -165,7 +163,7 @@ fn initialise_score(world: &mut World) {
         .with(UiText::new(
             font.clone(),
             "0".to_string(),
-            [1.0, 1.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
             50.,
         ))
         .with(Anchored::new(Anchor::TopMiddle))
@@ -174,14 +172,39 @@ fn initialise_score(world: &mut World) {
         .create_entity()
         .with(p2_transform)
         .with(UiText::new(
-            font,
+            font.clone(),
             "0".to_string(),
-            [1.0, 1.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
             50.,
         ))
         .with(Anchored::new(Anchor::TopMiddle))
         .build();
     world.add_resource(ScoreText { p1_score, p2_score });
+
+    let button_builder = {
+        // Until we can borrow immutably whilst also borrowing mutably, we need to restrict this
+        // lifetime
+        UiButtonBuilder::new("btn", "Button!", UiButtonResources::from_world(&world))
+            .with_uitext(UiText::new(
+                font,
+                "Button!".to_string(),
+                [0.2, 0.2, 1.0, 1.0],
+                20.,
+            ))
+            .with_transform(UiTransform::new(
+                "btn_transform".to_string(),
+                0.0,
+                -32.0,
+                -1.0,
+                128.0,
+                64.0,
+                9,
+            ))
+            .with_anchored(Anchored::new(Anchor::BottomMiddle))
+    };
+    let button = button_builder.build_from_world(world).image;
+
+    world.add_resource(CheatButton { button });
 }
 
 /// Converts a vector of vertices into a mesh.

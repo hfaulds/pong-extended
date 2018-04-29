@@ -5,12 +5,10 @@ extern crate amethyst;
 mod pong;
 mod systems;
 mod bundle;
-mod audio;
 
 use std::time::Duration;
 
 use amethyst::Result;
-use amethyst::audio::AudioBundle;
 use amethyst::core::frame_limiter::FrameRateLimitStrategy;
 use amethyst::core::transform::TransformBundle;
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
@@ -19,7 +17,6 @@ use amethyst::prelude::*;
 use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosTex, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
 
-use audio::Music;
 use bundle::PongBundle;
 
 const ARENA_HEIGHT: f32 = 100.0;
@@ -33,13 +30,6 @@ const BALL_VELOCITY_X: f32 = 75.0;
 const BALL_VELOCITY_Y: f32 = 50.0;
 const BALL_RADIUS: f32 = 2.5;
 const BALL_COLOUR: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-
-const AUDIO_MUSIC: &'static [&'static str] = &[
-    "audio/Computer_Music_All-Stars_-_Wheres_My_Jetpack.ogg",
-    "audio/Computer_Music_All-Stars_-_Albatross_v2.ogg",
-];
-const AUDIO_BOUNCE: &'static str = "audio/bounce.ogg";
-const AUDIO_SCORE: &'static str = "audio/score.ogg";
 
 fn main() {
     if let Err(e) = run() {
@@ -65,7 +55,7 @@ fn run() -> Result<()> {
     let assets_dir = format!("{}/assets/", env!("CARGO_MANIFEST_DIR"));
     let pipe = Pipeline::build().with_stage(
         Stage::with_backbuffer()
-            .clear_target([0.0, 0.0, 0.0, 1.0], 1.0)
+            .clear_target([1.0, 1.0, 1.0, 1.0], 1.0)
             .with_pass(DrawFlat::<PosTex>::new())
             .with_pass(DrawUi::new()),
     );
@@ -79,7 +69,6 @@ fn run() -> Result<()> {
         )?
         .with_bundle(PongBundle)?
         .with_bundle(TransformBundle::new().with_dep(&["ball_system", "paddle_system"]))?
-        .with_bundle(AudioBundle::new(|music: &mut Music| music.music.next()))?
         .with_bundle(UiBundle::<String, String>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .build()?;
