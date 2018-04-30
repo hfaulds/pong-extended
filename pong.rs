@@ -6,10 +6,9 @@ use amethyst::core::transform::{GlobalTransform, Transform};
 use amethyst::ecs::prelude::World;
 use amethyst::prelude::*;
 use amethyst::renderer::{Camera, Event, KeyboardInput, Material, MeshHandle, PosTex, Projection,
-                         VirtualKeyCode, WindowEvent, WindowMessages};
-use amethyst::ui::{Anchor, Anchored, TtfFormat, UiText, UiTransform, UiButtonBuilder,
-                    UiButtonResources};
-use systems::{CheatButton, ScoreText};
+                         VirtualKeyCode, WindowEvent};
+use amethyst::ui::{Anchor, Anchored, TtfFormat, UiText, UiTransform };
+use systems::{ScoreText};
 
 pub struct Pong;
 
@@ -20,7 +19,6 @@ impl State for Pong {
         initialise_balls(world);
         initialise_camera(world);
         initialise_score(world);
-        hide_cursor(world);
     }
 
     fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
@@ -56,19 +54,6 @@ fn initialise_camera(world: &mut World) {
             Matrix4::from_translation(Vector3::new(0.0, 0.0, 1.0)).into(),
         ))
         .build();
-}
-
-/// Hide the cursor, so it's invisible while playing.
-fn hide_cursor(world: &mut World) {
-    use amethyst::winit::CursorState;
-
-    //world
-        //.write_resource::<WindowMessages>()
-        //.send_command(|win| {
-            //if let Err(err) = win.set_cursor_state(CursorState::Hide) {
-                //eprintln!("Unable to make cursor hidden! Error: {:?}", err);
-            //}
-        //});
 }
 
 /// Initialises one paddle on the left, and one paddle on the right.
@@ -179,32 +164,7 @@ fn initialise_score(world: &mut World) {
         ))
         .with(Anchored::new(Anchor::TopMiddle))
         .build();
-    world.add_resource(ScoreText { p1_score, p2_score });
-
-    let button_builder = {
-        // Until we can borrow immutably whilst also borrowing mutably, we need to restrict this
-        // lifetime
-        UiButtonBuilder::new("btn", "Button!", UiButtonResources::from_world(&world))
-            .with_uitext(UiText::new(
-                font,
-                "Button!".to_string(),
-                [0.2, 0.2, 1.0, 1.0],
-                20.,
-            ))
-            .with_transform(UiTransform::new(
-                "btn_transform".to_string(),
-                0.0,
-                -32.0,
-                -1.0,
-                128.0,
-                64.0,
-                9,
-            ))
-            .with_anchored(Anchored::new(Anchor::BottomMiddle))
-    };
-    let button = button_builder.build_from_world(world).image;
-
-    world.add_resource(CheatButton { button });
+    world.add_resource(Some(ScoreText { p1_score, p2_score }));
 }
 
 /// Converts a vector of vertices into a mesh.

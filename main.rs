@@ -3,6 +3,7 @@
 extern crate amethyst;
 
 mod pong;
+mod start_screen;
 mod systems;
 mod bundle;
 
@@ -39,7 +40,7 @@ fn main() {
 }
 
 fn run() -> Result<()> {
-    use pong::Pong;
+    use start_screen::StartScreen;
 
     let display_config_path = format!(
         "{}/resources/display.ron",
@@ -59,7 +60,7 @@ fn run() -> Result<()> {
             .with_pass(DrawFlat::<PosTex>::new())
             .with_pass(DrawUi::new()),
     );
-    let mut game = Application::build(assets_dir, Pong)?
+    let mut game = Application::build(assets_dir, StartScreen)?
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(2)),
             144,

@@ -1,6 +1,6 @@
 use {Ball, ScoreBoard};
 use amethyst::core::transform::Transform;
-use amethyst::ecs::prelude::{Entity, Join, ReadExpect, System, Write, WriteStorage};
+use amethyst::ecs::prelude::{Entity, Join, Read, System, Write, WriteStorage};
 use amethyst::ui::{UiText};
 
 /// This system is responsible for checking if a ball has moved into a left or
@@ -14,7 +14,7 @@ impl<'s> System<'s> for WinnerSystem {
         WriteStorage<'s, Transform>,
         WriteStorage<'s, UiText>,
         Write<'s, ScoreBoard>,
-        ReadExpect<'s, ScoreText>,
+        Read<'s, Option<ScoreText>>,
     );
 
     fn run(
@@ -27,6 +27,7 @@ impl<'s> System<'s> for WinnerSystem {
             score_text,
         ): Self::SystemData,
     ) {
+        if let Some(ref score_text) = score_text.as_ref() {
         for (ball, transform) in (&mut balls, &mut transforms).join() {
             use ARENA_WIDTH;
 
@@ -62,6 +63,7 @@ impl<'s> System<'s> for WinnerSystem {
                 );
             }
         }
+    }
     }
 }
 

@@ -1,41 +1,36 @@
-use ScoreBoard;
-use amethyst::ecs::prelude::{Entity, ReadExpect, System, Write};
+use amethyst::ecs::prelude::{WriteExpect, System, Write};
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::ui::{UiEvent, UiEventType};
+use amethyst::ui::{UiButton, UiEvent, UiEventType};
 
-pub struct CheatSystem {
+pub struct StartButtonSystem {
     reader_id: Option<ReaderId<UiEvent>>,
 }
 
-impl CheatSystem {
+impl StartButtonSystem {
     pub fn new() -> Self {
-        CheatSystem { reader_id: None }
+        StartButtonSystem { reader_id: None }
     }
 }
 
-impl<'s> System<'s> for CheatSystem {
+impl<'s> System<'s> for StartButtonSystem {
     type SystemData = (
         Write<'s, EventChannel<UiEvent>>,
-        Write<'s, ScoreBoard>,
-        ReadExpect<'s, CheatButton>,
+        WriteExpect<'s, StartButton>,
     );
 
     fn run(
         &mut self,
-        (
-            mut events,
-            mut score_board,
-            cheat_button,
-        ): Self::SystemData,
+        (mut events, mut start_button): Self::SystemData,
     ) {
+        let image = start_button.button.image;
         if self.reader_id.is_none() {
             self.reader_id = Some(events.register_reader());
         }
         for e in events.read(self.reader_id.as_mut().unwrap()) {
-            if e.target == cheat_button.button {
+            if e.target == image {
                 match e.event_type {
                     UiEventType::ClickStop => {
-                        score_board.score_right += 1;
+                        start_button.is_clicked = true
                     }
                     _ => {}
                 }
@@ -44,6 +39,7 @@ impl<'s> System<'s> for CheatSystem {
     }
 }
 
-pub struct CheatButton {
-    pub button: Entity
+pub struct StartButton {
+    pub button: UiButton,
+    pub is_clicked: bool,
 }
