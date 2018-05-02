@@ -54,7 +54,7 @@ fn run() -> Result<()> {
             .with_pass(DrawFlat::<PosTex>::new())
             .with_pass(DrawUi::new()),
     );
-    let mut game = Application::build(assets_dir, StartScreen)?
+    let mut game = Application::build(assets_dir, StartScreen::new())?
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(2)),
             144,
