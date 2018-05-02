@@ -1,7 +1,7 @@
-use {Ball, ScoreBoard};
 use amethyst::core::transform::Transform;
 use amethyst::ecs::prelude::{Entity, Join, Read, System, Write, WriteStorage};
-use amethyst::ui::{UiText};
+use amethyst::ui::UiText;
+use {Ball, ScoreBoard};
 
 /// This system is responsible for checking if a ball has moved into a left or
 /// a right edge. Points are distributed to the player on the other side, and
@@ -19,51 +19,45 @@ impl<'s> System<'s> for WinnerSystem {
 
     fn run(
         &mut self,
-        (
-            mut balls,
-            mut transforms,
-            mut text,
-            mut score_board,
-            score_text,
-        ): Self::SystemData,
+        (mut balls, mut transforms, mut text, mut score_board, score_text): Self::SystemData,
     ) {
         if let Some(ref score_text) = score_text.as_ref() {
-        for (ball, transform) in (&mut balls, &mut transforms).join() {
-            use ARENA_WIDTH;
+            for (ball, transform) in (&mut balls, &mut transforms).join() {
+                use ARENA_WIDTH;
 
-            let ball_x = transform.translation[0];
+                let ball_x = transform.translation[0];
 
-            let did_hit = if ball_x <= ball.radius {
-                // Right player scored on the left side.
-                score_board.score_right += 1;
-                if let Some(text) = text.get_mut(score_text.p2_score) {
-                    text.text = score_board.score_right.to_string();
+                let did_hit = if ball_x <= ball.radius {
+                    // Right player scored on the left side.
+                    score_board.score_right += 1;
+                    if let Some(text) = text.get_mut(score_text.p2_score) {
+                        text.text = score_board.score_right.to_string();
+                    }
+                    true
+                } else if ball_x >= ARENA_WIDTH - ball.radius {
+                    // Left player scored on the right side.
+                    score_board.score_left += 1;
+                    if let Some(text) = text.get_mut(score_text.p1_score) {
+                        text.text = score_board.score_left.to_string();
+                    }
+                    true
+                } else {
+                    false
+                };
+
+                if did_hit {
+                    // Reset the ball.
+                    ball.velocity[0] = -ball.velocity[0];
+                    transform.translation[0] = ARENA_WIDTH / 2.0;
+
+                    // Print the score board.
+                    println!(
+                        "Score: | {:^3} | {:^3} |",
+                        score_board.score_left, score_board.score_right
+                    );
                 }
-                true
-            } else if ball_x >= ARENA_WIDTH - ball.radius {
-                // Left player scored on the right side.
-                score_board.score_left += 1;
-                if let Some(text) = text.get_mut(score_text.p1_score) {
-                    text.text = score_board.score_left.to_string();
-                }
-                true
-            } else {
-                false
-            };
-
-            if did_hit {
-                // Reset the ball.
-                ball.velocity[0] = -ball.velocity[0];
-                transform.translation[0] = ARENA_WIDTH / 2.0;
-
-                // Print the score board.
-                println!(
-                    "Score: | {:^3} | {:^3} |",
-                    score_board.score_left, score_board.score_right
-                );
             }
         }
-    }
     }
 }
 

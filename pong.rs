@@ -1,5 +1,3 @@
-use {ARENA_HEIGHT, ARENA_WIDTH};
-use {Ball, Paddle, Side};
 use amethyst::assets::Loader;
 use amethyst::core::cgmath::Vector3;
 use amethyst::core::transform::{GlobalTransform, Transform};
@@ -7,8 +5,10 @@ use amethyst::ecs::prelude::World;
 use amethyst::prelude::*;
 use amethyst::renderer::{Camera, Event, KeyboardInput, Material, MeshHandle, PosTex, Projection,
                          VirtualKeyCode, WindowEvent};
-use amethyst::ui::{Anchor, Anchored, TtfFormat, UiText, UiTransform };
-use systems::{ScoreText};
+use amethyst::ui::{Anchor, Anchored, TtfFormat, UiText, UiTransform};
+use systems::ScoreText;
+use {Ball, Paddle, Side};
+use {ARENA_HEIGHT, ARENA_WIDTH};
 
 pub struct Pong;
 

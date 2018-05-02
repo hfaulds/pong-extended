@@ -1,6 +1,6 @@
-use {Ball, Paddle, Side};
 use amethyst::core::transform::Transform;
 use amethyst::ecs::prelude::{Join, ReadStorage, System, WriteStorage};
+use {Ball, Paddle, Side};
 
 /// This system is responsible for detecting collisions between balls and
 /// paddles, as well as balls and the top and bottom edges of the arena.
@@ -13,10 +13,7 @@ impl<'s> System<'s> for BounceSystem {
         ReadStorage<'s, Transform>,
     );
 
-    fn run(
-        &mut self,
-        (mut balls, paddles, transforms): Self::SystemData,
-    ) {
+    fn run(&mut self, (mut balls, paddles, transforms): Self::SystemData) {
         // Check whether a ball collided, and bounce off accordingly.
         //
         // We also check for the velocity of the ball every time, to prevent multiple collisions

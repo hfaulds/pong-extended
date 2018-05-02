@@ -1,6 +1,6 @@
-use amethyst::core::bundle::{SystemBundle, Result};
+use amethyst::core::bundle::{Result, SystemBundle};
 use amethyst::ecs::prelude::DispatcherBuilder;
-use systems::{StartButtonSystem, BounceSystem, MoveBallsSystem, PaddleSystem, WinnerSystem};
+use systems::{BounceSystem, MoveBallsSystem, PaddleSystem, StartButtonSystem, WinnerSystem};
 
 /// A bundle is a convenient way to initialise related resources, components and systems in a
 /// world. This bundle prepares the world for a game of pong.

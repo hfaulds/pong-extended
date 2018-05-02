@@ -2,14 +2,13 @@
 
 extern crate amethyst;
 
+mod bundle;
 mod pong;
 mod start_screen;
 mod systems;
-mod bundle;
 
 use std::time::Duration;
 
-use amethyst::Result;
 use amethyst::core::frame_limiter::FrameRateLimitStrategy;
 use amethyst::core::transform::TransformBundle;
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
@@ -17,6 +16,7 @@ use amethyst::input::InputBundle;
 use amethyst::prelude::*;
 use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosTex, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
+use amethyst::Result;
 
 use bundle::PongBundle;
 
@@ -42,16 +42,10 @@ fn main() {
 fn run() -> Result<()> {
     use start_screen::StartScreen;
 
-    let display_config_path = format!(
-        "{}/resources/display.ron",
-        env!("CARGO_MANIFEST_DIR")
-    );
+    let display_config_path = format!("{}/resources/display.ron", env!("CARGO_MANIFEST_DIR"));
     let display_config = DisplayConfig::load(display_config_path);
 
-    let key_bindings_path = format!(
-        "{}/resources/input.ron",
-        env!("CARGO_MANIFEST_DIR")
-    );
+    let key_bindings_path = format!("{}/resources/input.ron", env!("CARGO_MANIFEST_DIR"));
 
     let assets_dir = format!("{}/assets/", env!("CARGO_MANIFEST_DIR"));
     let pipe = Pipeline::build().with_stage(
