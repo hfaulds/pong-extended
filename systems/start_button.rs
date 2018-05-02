@@ -16,11 +16,9 @@ impl<'s> System<'s> for StartButtonSystem {
     type SystemData = (
         Write<'s, EventChannel<UiEvent>>,
         WriteExpect<'s, StartButton>,
-        WriteStorage<'s, UiText>,
-        WriteStorage<'s, UiImage>,
     );
 
-    fn run(&mut self, (mut events, mut start_button, mut text, mut images): Self::SystemData) {
+    fn run(&mut self, (mut events, mut start_button): Self::SystemData) {
         let image = start_button.button.image;
         if self.reader_id.is_none() {
             self.reader_id = Some(events.register_reader());
@@ -30,8 +28,6 @@ impl<'s> System<'s> for StartButtonSystem {
                 match e.event_type {
                     UiEventType::ClickStop => {
                         start_button.is_clicked = true;
-                        text.remove(start_button.button.text);
-                        images.remove(start_button.button.image);
                     }
                     _ => {}
                 }

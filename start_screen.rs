@@ -44,10 +44,14 @@ impl State for StartScreen {
     }
 
     fn update(&mut self, world: &mut World) -> Trans {
-        let start_button = world.read_resource::<StartButton>();
-        if start_button.is_clicked {
-            return Trans::Switch(Box::new(Pong));
+        let start_button_clicked = {
+            world.read_resource::<StartButton>().is_clicked
+        };
+        if start_button_clicked {
+            world.delete_all();
+            Trans::Switch(Box::new(Pong))
+        } else {
+            Trans::None
         }
-        Trans::None
     }
 }
